@@ -1,0 +1,22 @@
+{
+  "name": "first node project",
+  "version": "1.0.0",
+  "description": "this is my first node project",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohansahu18/backend-nodejs.git"
+  },
+  "author": "mohan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohansahu18/backend-nodejs/issues"
+  },
+  "homepage": "https://github.com/mohansahu18/backend-nodejs#readme",
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+}
