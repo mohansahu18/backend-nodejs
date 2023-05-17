@@ -6,17 +6,17 @@ const PORT = 3000;
  -> http module contain a function called as createServer
  -> this createServer function taker callback function as the input
  -> now this call back function takes two arguments :-
- ->  1) request= this arguments contains all the detail about incoming request
+ ->  1) req= this arguments contains all the detail about incoming req
  ->  2) response= this arguments contains function using which we can prepare response
 
  -> the createServer function returns return a server object
  */
 
-const server = http.createServer((request, response) => {
-    console.log(request.method)
-    if (request.url == "/faq") {
+const server = http.createServer((req, response) => {
+    console.log(req.method)
+    if (req.url == "/faq") {
         response.end("list of faq");
-    } else if (request.url == "/home") {
+    } else if (req.url == "/home") {
         response.end("home page");
 
     } else {
