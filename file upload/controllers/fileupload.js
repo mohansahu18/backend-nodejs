@@ -35,9 +35,12 @@ function isFileTypeSupported(fileType, supportedType) {
     return supportedType.includes(fileType)
 }
 
-async function uploadFileToCloudinary(file, folder) {
+async function uploadFileToCloudinary(file, folder, qualityValue) {
     let options = { folder }
     options.resource_type = "auto"
+    if (qualityValue) {
+        options.quality = qualityValue
+    }
     console.log('temp file path : - >', file.tempFilePath);
     return await cloudinary.uploader.upload(file.tempFilePath, options)
 }
@@ -88,6 +91,7 @@ const imageUpload = async (req, res) => {
     }
 }
 
+// video upload handler
 const videoUpload = async (req, res) => {
     try {
         // fetch data
@@ -135,5 +139,53 @@ const videoUpload = async (req, res) => {
     }
 }
 
+// reduce image size uploader
+let qualityValue = 90
+const imgSizeReducerUpload = async (req, res) => {
+    try {
+        // fetch the data
+        const { name, email, tags } = req.body
+        console.log("name,email,tags : - >", name, email, tags);
+        console.log("files are : - >", req.files);
+        const file = req.files.file
+        console.log("file are : - >", file);
 
-module.exports = { localFileUpload, imageUpload, videoUpload }
+        // validate data
+        const supportedType = ['jpg', 'png', 'jpeg']
+        const fileType = file.name.split(".")[1].toLowerCase()
+        console.log("file type are : - >", fileType);
+        if (!isFileTypeSupported(fileType, supportedType)) {
+            return res.status(500).json({
+                success: false,
+                message: "image formate is not supported"
+            })
+        }
+        // file formate supported,upload the file
+        const response = await uploadFileToCloudinary(file, "mohandemo", qualityValue)
+        console.log("response are  : - >", response);
+
+        //    save the entry into database
+        const fileData = await File.create({
+            name,
+            email,
+            tags,
+            url: response.secure_url
+        })
+
+        // successful response
+        return res.status(201).json({
+            success: true,
+            message: "file uploaded successfully",
+            data: fileData
+        })
+    } catch (err) {
+        console.log(err);
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "unable to upload video on cloudinary"
+        })
+    }
+}
+
+module.exports = { localFileUpload, imageUpload, videoUpload, imgSizeReducerUpload }
