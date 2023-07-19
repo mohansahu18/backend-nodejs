@@ -8,7 +8,7 @@ const fileSchema = new mongoose.Schema({
     email: {
         type: String
     },
-    imgurl: {
+    url: {
         type: String
     },
     tags: {

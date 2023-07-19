@@ -37,6 +37,7 @@ function isFileTypeSupported(fileType, supportedType) {
 
 async function uploadFileToCloudinary(file, folder) {
     let options = { folder }
+    options.resource_type = "auto"
     console.log('temp file path : - >', file.tempFilePath);
     return await cloudinary.uploader.upload(file.tempFilePath, options)
 }
@@ -55,20 +56,20 @@ const imageUpload = async (req, res) => {
         if (!isFileTypeSupported(fileType, supportedType)) {
             return res.status(500).json({
                 success: false,
-                message: "file formate is not supported"
+                message: "image formate is not supported"
             })
         }
 
         // file formate supported,upload the file
         const response = await uploadFileToCloudinary(file, "mohandemo")
-        console.log(response);
+        console.log("responce are  - > :", response);
 
         //    save the entry into database
         const fileData = await File.create({
             name,
             email,
             tags,
-            imgurl: response.secure_url
+            url: response.secure_url
         })
 
         // successful response
@@ -87,5 +88,52 @@ const imageUpload = async (req, res) => {
     }
 }
 
+const videoUpload = async (req, res) => {
+    try {
+        // fetch data
+        const { name, email, tags } = req.body
+        console.log("name,email,tags : - >", name, email, tags);
+        console.log("files are : - >", req.files);
+        const file = req.files.file
+        console.log("file are : - >", file);
+        // validate data
+        const supportedType = ['mp4', 'mvk']
+        const fileType = file.name.split(".")[1].toLowerCase()
+        console.log("file type are : - >", fileType);
+        if (!isFileTypeSupported(fileType, supportedType)) {
+            return res.status(500).json({
+                success: false,
+                message: "video formate is not supported"
+            })
+        }
 
-module.exports = { localFileUpload, imageUpload }
+        // file formate supported,upload the file
+        const response = await uploadFileToCloudinary(file, "mohandemo")
+        console.log("response are  : - >", response);
+
+        //    save the entry into database
+        const fileData = await File.create({
+            name,
+            email,
+            tags,
+            url: response.secure_url
+        })
+
+        // successful response
+        return res.status(201).json({
+            success: true,
+            message: "file uploaded successfully",
+            data: fileData
+        })
+    } catch (err) {
+        console.log(err);
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "unable to upload video on cloudinary"
+        })
+    }
+}
+
+
+module.exports = { localFileUpload, imageUpload, videoUpload }
