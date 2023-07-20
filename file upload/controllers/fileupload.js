@@ -101,7 +101,7 @@ const videoUpload = async (req, res) => {
         const file = req.files.file
         console.log("file are : - >", file);
         // validate data
-        const supportedType = ['mp4', 'mvk']
+        const supportedType = ['mp4', 'mkv']
         const fileType = file.name.split(".")[1].toLowerCase()
         console.log("file type are : - >", fileType);
         if (!isFileTypeSupported(fileType, supportedType)) {
@@ -109,6 +109,13 @@ const videoUpload = async (req, res) => {
                 success: false,
                 message: "video formate is not supported"
             })
+        }
+
+        // check foe the size
+        if (file.size > 2000000) {
+            return res.status(400).json({
+                success: false, message: 'File size exceeds the limit of 2MB'
+            });
         }
 
         // file formate supported,upload the file
@@ -183,7 +190,7 @@ const imgSizeReducerUpload = async (req, res) => {
         console.error(err);
         return res.status(500).json({
             success: false,
-            message: "unable to upload video on cloudinary"
+            message: "unable to upload image on cloudinary"
         })
     }
 }
